@@ -1,4 +1,5 @@
 import streamlit as st
+from pathlib import Path
 
 # Sidebar
 st.sidebar.title("Select a Company")
@@ -9,15 +10,14 @@ company = st.sidebar.selectbox(
 
 # Main content based on the selected company
 if company == "Confo Suisse":
-    st.header("Confo Suisse Details")
-    st.write("Here is the information for Confo Suisse...")
+    st.header("Confo Suisse _ Conversion")
+   
 elif company == "Coformama":
-    st.header("Coformama Details")
-    st.write("Here is the information for Coformama...")
+    st.header("Coformama _ Conversion")
+   
 elif company == "Bon Ami":
-    st.header("Bon Ami Details")
-    st.write("Here is the information for Bon Ami...")
+    st.header("Bon Ami _ Conversion")
+    
 elif company == "But":
-    st.header("But Details")
-    st.write("Here is the information for But...")
+    st.header("But _ Conversion")
 
