@@ -3,13 +3,13 @@ import pandas as pd
 import pdfplumber
 import tempfile
 import os
-from conversion import convertir_pdf_en_excel_confo, convertir_pdf_en_excel_cofo_suisse, convertir_pdf_en_excel_bonami, convertir_pdf_en_excel_but  # Importation des scripts externes
+from conversion import convertir_pdf_en_excel_confo, convertir_pdf_en_excel_coformama, convertir_pdf_en_excel_bonami, convertir_pdf_en_excel_but  # Importation des scripts externes
 
 # Sidebar
 st.sidebar.title("Sélectionner une entreprise")
 company = st.sidebar.selectbox(
     "Choisissez une entreprise:",
-    ["Bon Ami", "But", "Coformama","Conforama Suisse"]
+    ["Conforama Suisse", "Coformama", "Bon Ami", "But"]
 )
 
 # Définir les chemins des fichiers sources (XLSX pour les références)
@@ -33,26 +33,33 @@ def lancer_conversion(uploaded_file, conversion_function, company_name, source_f
     if uploaded_file and st.button("Lancer la conversion 🔄"):
         st.write("La conversion est en cours... ⏳")
         
+        # Créer un fichier temporaire pour enregistrer le PDF téléchargé
         with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmpfile:
             tmpfile.write(uploaded_file.read())
             pdf_path = tmpfile.name  # Chemin temporaire du fichier PDF
         
-        # Exécuter la conversion spécifique en utilisant le fichier source XLSX
-        output_excel_path = conversion_function(pdf_path, source_file)
-        
-        # Lire le fichier Excel généré pour affichage
-        df = pd.read_excel(output_excel_path)
-        st.write("Aperçu des données extraites :")
-        st.dataframe(df.head())
-        
-        # Bouton de téléchargement automatique
-        with open(output_excel_path, "rb") as f:
-            st.download_button(
-                label=f"📥 Télécharger le fichier Excel - {company_name}",
-                data=f,
-                file_name=f"resultat_{company_name}.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            )
+        try:
+            # Exécuter la conversion spécifique en utilisant le fichier source XLSX
+            output_excel_path = conversion_function(pdf_path, source_file)
+            
+            # Lire le fichier Excel généré pour affichage
+            df = pd.read_excel(output_excel_path)
+            
+            # Affichage d'un aperçu des données extraites
+            st.write("Aperçu des données extraites :")
+            st.dataframe(df.head())
+            
+            # Bouton de téléchargement automatique
+            with open(output_excel_path, "rb") as f:
+                st.download_button(
+                    label=f"📥 Télécharger le fichier Excel - {company_name}",
+                    data=f,
+                    file_name=f"resultat_{company_name}.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                )
+            
+        except Exception as e:
+            st.error(f"Erreur lors de la conversion : {e}")
         
         # Nettoyage des fichiers temporaires
         os.remove(pdf_path)
@@ -61,8 +68,8 @@ def lancer_conversion(uploaded_file, conversion_function, company_name, source_f
 # Main content based on the selected company
 uploaded_file = charger_pdf()
 
-if company == "Confo Suisse":
-    st.header("Confo Suisse _ Conversion 🚀")
+if company == "Conforama Suisse":
+    st.header("Conforama Suisse _ Conversion 🚀")
     lancer_conversion(uploaded_file, convertir_pdf_en_excel_confo, "ConforamaSuisse", source_files["Conforama Suisse"])
     st.video("https://www.example.com/animation_confo_suisse.mp4")
 
