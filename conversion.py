@@ -1,4 +1,4 @@
-nous navons pas dout path n  ce script est utilisé dans le script app.py de streamlit pour que une fois le fichier est converti , on affiche un aoercu, et on le telecharge import pdfplumber
+import pdfplumber
 import pandas as pd
 
 def extraire_tableaux_du_pdf(pdf_path):
