@@ -3,13 +3,13 @@ import pandas as pd
 import pdfplumber
 import tempfile
 import os
-from conversion import convertir_pdf_en_excel_confo, convertir_pdf_en_excel_coformama, convertir_pdf_en_excel_bonami, convertir_pdf_en_excel_but  # Importation des scripts externes
+from conversion import convertir_pdf_en_excel_conforama, convertir_pdf_en_excel_coformama_suisse, convertir_pdf_en_excel_bonami, convertir_pdf_en_excel_but  # Importation des scripts externes
 
 # Sidebar
 st.sidebar.title("Sélectionner une entreprise")
 company = st.sidebar.selectbox(
     "Choisissez une entreprise:",
-    ["Conforama Suisse", "Coformama", "Bon Ami", "But"]
+    ["Coformama", "Conforama Suisse", "Bon Ami", "But"]
 )
 
 # Définir les chemins des fichiers sources (XLSX pour les références)
