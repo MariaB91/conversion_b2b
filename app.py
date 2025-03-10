@@ -9,7 +9,7 @@ from conversion import convertir_pdf_en_excel_confo, convertir_pdf_en_excel_cofo
 st.sidebar.title("Sélectionner une entreprise")
 company = st.sidebar.selectbox(
     "Choisissez une entreprise:",
-    ["Conforama Suisse", "Coformama", "Bon Ami", "But"]
+    ["Bon Ami", "But", "Coformama","Conforama Suisse"]
 )
 
 # Définir les chemins des fichiers sources (XLSX pour les références)
