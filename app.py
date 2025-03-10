@@ -1,15 +1,14 @@
 import streamlit as st
 import pandas as pd
-import pdfplumber
 import tempfile
 import os
-from conversion import convertir_pdf_en_excel_conforama
+from conversion import convertir_pdf_en_excel_conforama  # Importation du script de conversion
 
 # Sidebar
 st.sidebar.title("Sélectionner une entreprise")
 company = st.sidebar.selectbox(
     "Choisissez une entreprise:",
-    ["Coformama", "Conforama Suisse", "Bon Ami", "But"]
+    ["Conforama Suisse", "Coformama", "Bon Ami", "But"]
 )
 
 # Définir les chemins des fichiers sources (XLSX pour les références)
@@ -33,12 +32,16 @@ def lancer_conversion(uploaded_file, conversion_function, company_name, source_f
     if uploaded_file and st.button("Lancer la conversion 🔄"):
         st.write("La conversion est en cours... ⏳")
         
-        # Créer un fichier temporaire pour enregistrer le PDF téléchargé
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmpfile:
-            tmpfile.write(uploaded_file.read())
-            pdf_path = tmpfile.name  # Chemin temporaire du fichier PDF
-        
         try:
+            # Créer un fichier temporaire pour enregistrer le PDF téléchargé
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmpfile:
+                tmpfile.write(uploaded_file.read())
+                pdf_path = tmpfile.name  # Chemin temporaire du fichier PDF
+
+            # Vérifier si le fichier source existe
+            if not os.path.exists(source_file):
+                raise FileNotFoundError(f"Le fichier source pour {company_name} est manquant.")
+
             # Exécuter la conversion spécifique en utilisant le fichier source XLSX
             output_excel_path = conversion_function(pdf_path, source_file)
             
@@ -59,31 +62,17 @@ def lancer_conversion(uploaded_file, conversion_function, company_name, source_f
                 )
             
         except Exception as e:
-            st.error(f"Erreur lors de la conversion : {e}")
+            st.error(f"Erreur lors de la conversion pour {company_name} : {e}")
         
         # Nettoyage des fichiers temporaires
         os.remove(pdf_path)
-        os.remove(output_excel_path)
+        if os.path.exists(output_excel_path):
+            os.remove(output_excel_path)
 
 # Main content based on the selected company
 uploaded_file = charger_pdf()
 
 if company == "Conforama Suisse":
     st.header("Conforama Suisse _ Conversion 🚀")
-    lancer_conversion(uploaded_file, convertir_pdf_en_excel_confo, "ConforamaSuisse", source_files["Conforama Suisse"])
+    lancer_conversion(uploaded_file, convertir_pdf_en_excel_conforama, "ConforamaSuisse", source_files["Conforama Suisse"])
     st.video("https://www.example.com/animation_confo_suisse.mp4")
-
-elif company == "Coformama":
-    st.header("Coformama _ Conversion 🛠️")
-    lancer_conversion(uploaded_file, convertir_pdf_en_excel_coformama, "Coformama", source_files["Coformama"])
-    st.video("https://www.example.com/animation_coformama.mp4")
-
-elif company == "Bon Ami":
-    st.header("Bon Ami _ Conversion 🏡")
-    lancer_conversion(uploaded_file, convertir_pdf_en_excel_bonami, "BonAmi", source_files["Bon Ami"])
-    st.video("https://www.example.com/animation_bon_ami.mp4")
-
-elif company == "But":
-    st.header("But _ Conversion 🛋️")
-    lancer_conversion(uploaded_file, convertir_pdf_en_excel_but, "But", source_files["But"])
-    st.video("https://www.example.com/animation_but.mp4")
