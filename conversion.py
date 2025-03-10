@@ -1,3 +1,19 @@
+import pdfplumber
+import pandas as pd
+
+def extraire_tableaux_du_pdf(pdf_path):
+    """
+    Extrait les tableaux d'un fichier PDF et les retourne sous forme de DataFrame.
+    """
+    tables = []
+    with pdfplumber.open(pdf_path) as pdf:
+        for page in pdf.pages:
+            table = page.extract_table()
+            if table:
+                df = pd.DataFrame(table[1:], columns=table[0])
+                tables.append(df)
+    return pd.concat(tables, ignore_index=True) if tables else pd.DataFrame()
+
 def convertir_pdf_en_excel_conforama(pdf_path, source_xlsx):
     """
     Conversion spécifique pour Conforama.
@@ -16,7 +32,7 @@ def convertir_pdf_en_excel_conforama(pdf_path, source_xlsx):
     if df_pdf.empty:
         raise ValueError("Aucune donnée trouvée dans le PDF.")
 
-    # Supprimer les colonnes inutiles (si elles existent dans le PDF)
+    # Supprimer les colonnes inutiles
     columns_a_supprimer = ['Noligne', 'Prixunit.D3E', 'Prixunit.DEA', 'No.O.S.']
     df_pdf.drop(columns=[col for col in columns_a_supprimer if col in df_pdf.columns], inplace=True)
 
@@ -30,8 +46,6 @@ def convertir_pdf_en_excel_conforama(pdf_path, source_xlsx):
 
     # Réorganiser les colonnes dans l'ordre désiré
     desired_order = ['EAN', 'Article', 'Designation', 'Qte', 'PA HT', 'Total PA HT']
-    
-    # Vérifier si les colonnes demandées existent avant de les sélectionner
     df_pdf = df_pdf[[col for col in desired_order if col in df_pdf.columns]]
 
     # Enregistrer le fichier converti au format Excel
